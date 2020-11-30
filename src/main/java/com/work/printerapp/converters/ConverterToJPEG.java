@@ -1,5 +1,6 @@
 package com.work.printerapp.converters;
 
+import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.jbig2.JBIG2ImageReaderSpi;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -11,6 +12,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
 import java.awt.image.BufferedImage;
 
+import java.awt.image.MemoryImageSource;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -31,9 +33,9 @@ public class ConverterToJPEG implements ConverterPDF,Runnable {
         this.inputPDF = inputPDF;
     }
 
-public String getImagesFolder() {
+    public String getImagesFolder() {
         return  imagesFolder;
-}
+    }
     public void setDestination(String destination) {
         this.destination = destination;
     }
@@ -41,19 +43,18 @@ public String getImagesFolder() {
     public void  convert()  {
         IIORegistry.getDefaultInstance().registerServiceProvider(new JBIG2ImageReaderSpi());
         if (inputPDF.exists()) {
-            try( PDDocument doc = PDDocument.load(inputPDF)) {
+            try( PDDocument doc = PDDocument.load(inputPDF, MemoryUsageSetting.setupTempFileOnly())) {
                 PDFRenderer renderer = new PDFRenderer(doc);
                 String fileName = inputPDF.getName().replace(".pdf", "");
                 Path savePath = Paths.get(destination +  File.separator + fileName);
 
                 Files.createDirectories(savePath);
                 System.out.println("CONVERTER START.....");
-                int pageCounter = 0 ;
-                for (PDPage page : doc.getPages()) {
-                    String imageName = fileName + "_" + (pageCounter++) + ".jpg";
+                for (int i = 0 ; i < doc.getNumberOfPages(); ++i) {
+                    String imageName = fileName + "_" + i + ".jpg";
                     File fileTemp = new File(savePath.toFile() ,   imageName); // jpg or png
                     if(!fileTemp.exists()) {
-                        BufferedImage image = renderer.renderImageWithDPI(pageCounter, 75, ImageType.RGB);
+                        BufferedImage image = renderer.renderImageWithDPI(i, 100, ImageType.RGB);
                         ImageIO.write(image, "jpg", fileTemp);
                     }
                 }
