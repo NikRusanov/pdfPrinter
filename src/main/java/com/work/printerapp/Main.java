@@ -6,14 +6,15 @@ import com.work.printerapp.input.Args;
 import com.work.printerapp.input.Config;
 import com.work.printerapp.input.FileConfiguration;
 
-import java.awt.print.PrinterException;
 import java.io.IOException;
+import java.util.logging.Level;
 
 public class Main {
 
     public static void main(String[] args) {
 
-
+        java.util.logging.Logger.getLogger("org.apache.pdfbox")
+                .setLevel(Level.SEVERE);
         Args arguments = new Args();
         JCommander commander = JCommander.newBuilder()
                 .addObject(arguments)
@@ -30,7 +31,7 @@ public class Main {
 
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Bad Argument");
         }
     }
 }

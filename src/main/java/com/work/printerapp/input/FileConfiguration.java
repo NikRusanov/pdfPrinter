@@ -1,6 +1,8 @@
 package com.work.printerapp.input;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonParseException;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -16,7 +18,11 @@ public class FileConfiguration implements Config{
 
     @Override
     public void read() {
-        configPaths = gson.fromJson(fl, JsonConfig.class);
+        try {
+             configPaths = gson.fromJson(fl, JsonConfig.class);
+        } catch (JsonParseException  ex) {
+            System.err.println("error json structure");
+        }
     }
 
     @Override

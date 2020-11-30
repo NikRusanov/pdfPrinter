@@ -41,15 +41,19 @@ public class App {
                     try {
                         Files.move(path, tempFile.resolve(path.getFileName()), REPLACE_EXISTING);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        System.err.println("Error to move file. Bad path");
                     }
                 });
 
             } catch (IOException e) {
-                e.printStackTrace();
+               System.err.println("Error to parse dir. Bad path");
             }
         }
-      // printer.printImages(targetPath);
+       try {
+        printer.printImages(targetPath);
+       } catch (IOException e) {
+           System.err.println("error to find jpg for print. ");
+       }
     }
 }
 

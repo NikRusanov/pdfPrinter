@@ -69,7 +69,7 @@ public class Printer {
                                 );
                             }
                         } catch (PrinterException | IOException e) {
-                            e.printStackTrace();
+                            System.err.println("Error to initialize printer");
                         }
                     });
         }

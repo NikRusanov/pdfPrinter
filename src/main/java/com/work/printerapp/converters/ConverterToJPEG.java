@@ -1,26 +1,26 @@
 package com.work.printerapp.converters;
 
+import com.github.jaiimageio.jpeg2000.impl.J2KImageReaderSpi;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.jbig2.JBIG2ImageReaderSpi;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import  org.apache.pdfbox.tools.imageio.ImageIOUtil;
 
 import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
 import java.awt.image.BufferedImage;
-
-import java.awt.image.MemoryImageSource;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class ConverterToJPEG implements ConverterPDF,Runnable {
+    static {
+        IIORegistry.getDefaultInstance().registerServiceProvider(new JBIG2ImageReaderSpi());
+        IIORegistry.getDefaultInstance().registerServiceProvider(new J2KImageReaderSpi());
+    }
     private File inputPDF;
     private String destination;
     private String imagesFolder;
@@ -41,9 +41,8 @@ public class ConverterToJPEG implements ConverterPDF,Runnable {
     }
 
     public void  convert()  {
-        IIORegistry.getDefaultInstance().registerServiceProvider(new JBIG2ImageReaderSpi());
-        if (inputPDF.exists()) {
-            try( PDDocument doc = PDDocument.load(inputPDF, MemoryUsageSetting.setupTempFileOnly())) {
+                if (inputPDF.exists()) {
+            try( PDDocument doc = PDDocument.load(inputPDF, MemoryUsageSetting.setupMixed(200000000))) {
                 PDFRenderer renderer = new PDFRenderer(doc);
                 String fileName = inputPDF.getName().replace(".pdf", "");
                 Path savePath = Paths.get(destination +  File.separator + fileName);
@@ -54,7 +53,7 @@ public class ConverterToJPEG implements ConverterPDF,Runnable {
                     String imageName = fileName + "_" + i + ".jpg";
                     File fileTemp = new File(savePath.toFile() ,   imageName); // jpg or png
                     if(!fileTemp.exists()) {
-                        BufferedImage image = renderer.renderImageWithDPI(i, 100, ImageType.RGB);
+                        BufferedImage image = renderer.renderImageWithDPI(i, 75, ImageType.RGB);
                         ImageIO.write(image, "jpg", fileTemp);
                     }
                 }
