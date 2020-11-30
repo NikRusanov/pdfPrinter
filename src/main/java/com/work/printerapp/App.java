@@ -17,14 +17,14 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public class App {
     Printer printer = new Printer();
     App(ArrayList<String> sourcePaths, String targetPath) {
-        System.out.print("Enter your destination folder where save image \n");
+
 
         Path tempFile = Path.of(sourcePaths.get(0) + "_ARHIVE");
         if (Files.notExists(tempFile)) {
             try { Files.createDirectory(tempFile); }
             catch (Exception e ) { e.printStackTrace(); }
         }
-        System.out.print("Enter your selected pdf files name with source folder \n");
+
         List<Path> pdfsInDir;
         for(var sourcePath : sourcePaths) {
             try (Stream<Path> walk = Files.list(Paths.get(sourcePath))) {
