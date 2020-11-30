@@ -1,0 +1,31 @@
+package com.work.printerapp.input;
+
+import com.google.gson.Gson;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+
+public class FileConfiguration implements Config{
+    private Gson gson = new Gson();
+    private FileReader fl;
+    private JsonConfig configPaths;
+    public FileConfiguration(String path) throws FileNotFoundException {
+        fl = new FileReader(path);
+    }
+
+    @Override
+    public void read() {
+        configPaths = gson.fromJson(fl, JsonConfig.class);
+    }
+
+    @Override
+    public ArrayList<String> getSourcePaths() {
+        return configPaths.getSourcePaths();
+    }
+
+    @Override
+    public String getTargetPath() {
+        return configPaths.getTargetPath();
+    }
+}
